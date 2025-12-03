@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">Tool Types</h2>
+
+<div class="card mb-4 p-3">
+    <h3>All Tool Types</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tt in tool_types %}
+            <tr>
+                <td>{{ tt.id }}</td>
+                <td>{{ tt.name }}</td>
+                <td>{{ tt.description }}</td>
+                <td>
+                    <a href="/tool-types/edit/{{ tt.id }}" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="/tool-types/delete/{{ tt.id }}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card p-3">
+    <h3>Add New Tool Type</h3>
+    <form method="POST" action="/tool-types/add">
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" required>
+
+        <label for="description">Description</label>
+        <textarea name="description" id="description" rows="3"></textarea>
+
+        <button type="submit" class="btn btn-success mt-2">Add Tool Type</button>
+    </form>
+</div>
+{% endblock %}

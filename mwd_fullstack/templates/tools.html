@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">Tools</h2>
+
+<div class="card mb-4 p-3">
+    <h3>All Tools</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Serial Number</th>
+                <th>Type</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tool in tools %}
+            <tr>
+                <td>{{ tool.id }}</td>
+                <td>{{ tool.name }}</td>
+                <td>{{ tool.serial_number }}</td>
+                <td>{{ tool.tool_type.name }}</td>
+                <td>{{ tool.location }}</td>
+                <td>{{ tool.status }}</td>
+                <td>
+                    <a href="/tools/edit/{{ tool.id }}" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="/tools/delete/{{ tool.id }}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card p-3">
+    <h3>Add New Tool</h3>
+    <form method="POST" action="/tools/add">
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" required>
+
+        <label for="serial_number">Serial Number</label>
+        <input type="text" name="serial_number" id="serial_number" required>
+
+        <label for="type_id">Tool Type</label>
+        <select name="type_id" id="type_id" required>
+            {% for tt in tool_types %}
+            <option value="{{ tt.id }}">{{ tt.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="location">Location</label>
+        <input type="text" name="location" id="location">
+
+        <button type="submit" class="btn btn-success mt-2">Add Tool</button>
+    </form>
+</div>
+{% endblock %}

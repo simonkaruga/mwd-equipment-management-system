@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Add New Tool</h2>
+
+<form method="POST" action="/tools/add">
+    <div class="mb-3">
+        <label class="form-label">Tool Name</label>
+        <input type="text" class="form-control" name="name" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Serial Number</label>
+        <input type="text" class="form-control" name="serial_number" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Type</label>
+        <select class="form-select" name="type_id" required>
+            {% for type in types %}
+            <option value="{{ type.id }}">{{ type.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Location</label>
+        <input type="text" class="form-control" name="location" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Tool</button>
+    <a href="/tools" class="btn btn-secondary">Cancel</a>
+</form>
+
+{% endblock %}
