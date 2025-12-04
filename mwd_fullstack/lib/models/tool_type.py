@@ -6,8 +6,8 @@ class ToolType(Base):
     __tablename__ = "tool_types"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, nullable=False)
+    name = Column(String, nullable=False, unique=True)
     description = Column(String, nullable=True)
 
-    # Relationship with Tool
+    # Relationship with Tools
     tools = relationship("Tool", back_populates="tool_type")

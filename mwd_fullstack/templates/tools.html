@@ -1,61 +1,119 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2 class="mb-4">Tools</h2>
+<h1 class="text-center mb-5">Tool Inventory Management</h1>
 
-<div class="card mb-4 p-3">
-    <h3>All Tools</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Serial Number</th>
-                <th>Type</th>
-                <th>Location</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for tool in tools %}
-            <tr>
-                <td>{{ tool.id }}</td>
-                <td>{{ tool.name }}</td>
-                <td>{{ tool.serial_number }}</td>
-                <td>{{ tool.tool_type.name }}</td>
-                <td>{{ tool.location }}</td>
-                <td>{{ tool.status }}</td>
-                <td>
-                    <a href="/tools/edit/{{ tool.id }}" class="btn btn-primary btn-sm">Edit</a>
-                    <a href="/tools/delete/{{ tool.id }}" class="btn btn-danger btn-sm">Delete</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="row">
+    <div class="col-md-7 mb-4">
+        <div class="card shadow-lg h-100">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0"><i class="bi bi-tools me-2"></i> All Tools</h3>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Serial No.</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tool in tools %}
+                            <tr>
+                                <td>{{ tool.id }}</td>
+                                <td>{{ tool.name }}</td>
+                                <td>{{ tool.serial_number }}</td>
+                                <td>{{ tool.tool_type.name }}</td>
+                                <td>{{ tool.location }}</td>
+                                <td>
+                                    {% if tool.status == 'Available' %}
+                                        <span class="badge bg-success status-available">Available</span>
+                                    {% else %}
+                                        <span class="badge bg-danger status-checked_out">{{ tool.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <a href="/tools/edit/{{ tool.id }}" class="btn btn-warning btn-sm me-2" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" 
+                                            data-bs-target="#deleteModal-{{ tool.id }}" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5 mb-4">
+        <div class="card shadow-lg h-100">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0"><i class="bi bi-plus-circle me-2"></i> Add New Tool</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/tools/add">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Tool Name</label>
+                        <input type="text" name="name" id="name" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="serial_number" class="form-label">Serial Number</label>
+                        <input type="text" name="serial_number" id="serial_number" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="type_id" class="form-label">Tool Type</label>
+                        <select name="type_id" id="type_id" class="form-select" required>
+                            <option value="" disabled selected>Select a Tool Type</option>
+                            {% for tt in tool_types %}
+                            <option value="{{ tt.id }}">{{ tt.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="location" class="form-label">Current Location (Optional)</label>
+                        <input type="text" name="location" id="location" class="form-control">
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Register Tool
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="card p-3">
-    <h3>Add New Tool</h3>
-    <form method="POST" action="/tools/add">
-        <label for="name">Name</label>
-        <input type="text" name="name" id="name" required>
-
-        <label for="serial_number">Serial Number</label>
-        <input type="text" name="serial_number" id="serial_number" required>
-
-        <label for="type_id">Tool Type</label>
-        <select name="type_id" id="type_id" required>
-            {% for tt in tool_types %}
-            <option value="{{ tt.id }}">{{ tt.name }}</option>
-            {% endfor %}
-        </select>
-
-        <label for="location">Location</label>
-        <input type="text" name="location" id="location">
-
-        <button type="submit" class="btn btn-success mt-2">Add Tool</button>
-    </form>
+{% for tool in tools %}
+<div class="modal fade" id="deleteModal-{{ tool.id }}" tabindex="-1" aria-labelledby="deleteModalLabel-{{ tool.id }}" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteModalLabel-{{ tool.id }}">Confirm Deletion</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to permanently delete **{{ tool.name }} ({{ tool.serial_number }})**? This action cannot be undone.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <a href="/tools/delete/{{ tool.id }}" class="btn btn-danger">Delete Tool</a>
+      </div>
+    </div>
+  </div>
 </div>
+{% endfor %}
 {% endblock %}

@@ -1,60 +1,105 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2 class="mb-4">Checkouts</h2>
+<h1 class="text-center mb-5">Tool Checkout Tracker</h1>
 
-<div class="card mb-4 p-3">
-    <h3>Active Checkouts</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>User</th>
-                <th>Tool</th>
-                <th>Checked Out At</th>
-                <th>Returned At</th>
-                <th>Condition</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for co in checkouts %}
-            <tr>
-                <td>{{ co.id }}</td>
-                <td>{{ co.user.username }}</td>
-                <td>{{ co.tool.name }}</td>
-                <td>{{ co.checked_out_at }}</td>
-                <td>{{ co.returned_at if co.returned_at else "-" }}</td>
-                <td>{{ co.condition_on_return if co.condition_on_return else "-" }}</td>
-                <td>
-                    {% if not co.returned_at %}
-                    <a href="/checkouts/return/{{ co.id }}" class="btn btn-success btn-sm">Return</a>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a href="/checkouts/new" class="btn btn-primary">
+        <i class="bi bi-box-arrow-in-down-right me-2"></i> Initiate New Checkout
+    </a>
+    <span class="text-muted">Currently tracking **{{ checkouts | length }}** active assignments.</span>
+</div>
+
+<div class="card shadow-lg">
+    <div class="card-header bg-dark text-white">
+        <h3 class="mb-0"><i class="bi bi-calendar-check me-2"></i> Active Tool Checkouts</h3>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 5%;">ID</th>
+                        <th style="width: 20%;">Tool (Serial No.)</th>
+                        <th style="width: 15%;">Checked Out By</th>
+                        <th style="width: 15%;">Checkout Date</th>
+                        <th style="width: 15%;">Due Date</th>
+                        <th style="width: 15%;">Project/Location</th>
+                        <th class="text-center" style="width: 15%;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for checkout in checkouts %}
+                    {% if checkout.is_overdue %}
+                        <tr class="table-danger">
+                    {% else %}
+                        <tr>
                     {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                        <td>{{ checkout.id }}</td>
+                        <td>
+                            <a href="/tools/{{ checkout.tool.id }}" class="text-primary fw-bold text-decoration-none">
+                                {{ checkout.tool.name }}
+                            </a>
+                            <small class="d-block text-muted">({{ checkout.tool.serial_number }})</small>
+                        </td>
+                        <td>{{ checkout.user.first_name }} {{ checkout.user.last_name }}</td>
+                        <td>{{ checkout.checkout_date | default("N/A") }}</td>
+                        
+                        <td>
+                            {% if checkout.is_overdue %}
+                                <span class="badge bg-danger">OVERDUE!</span>
+                                <small class="d-block mt-1">{{ checkout.due_date | default("N/A") }}</small>
+                            {% else %}
+                                <span class="badge bg-primary">{{ checkout.due_date | default("N/A") }}</span>
+                            {% endif %}
+                        </td>
+                        
+                        <td>{{ checkout.project_location }}</td>
+                        
+                        <td class="text-center">
+                            <button type="button" class="btn btn-success btn-sm me-2" data-bs-toggle="modal" 
+                                    data-bs-target="#returnModal-{{ checkout.id }}" title="Return Tool">
+                                <i class="bi bi-box-arrow-in-up-left"></i> Return
+                            </button>
+                            <a href="/checkouts/details/{{ checkout.id }}" class="btn btn-info btn-sm" title="View Details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    
+                    {% if not checkouts %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            No tools are currently checked out. Ready for assignment!
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
-<div class="card p-3">
-    <h3>Checkout Tool</h3>
-    <form method="POST" action="/checkouts/add">
-        <label for="user_id">User</label>
-        <select name="user_id" id="user_id" required>
-            {% for user in users %}
-            <option value="{{ user.id }}">{{ user.username }}</option>
-            {% endfor %}
-        </select>
-
-        <label for="tool_id">Tool</label>
-        <select name="tool_id" id="tool_id" required>
-            {% for tool in tools if tool.status == "available" %}
-            <option value="{{ tool.id }}">{{ tool.name }} ({{ tool.serial_number }})</option>
-            {% endfor %}
-        </select>
-
-        <button type="submit" class="btn btn-success mt-2">Checkout Tool</button>
-    </form>
+{% for checkout in checkouts %}
+<div class="modal fade" id="returnModal-{{ checkout.id }}" tabindex="-1" aria-labelledby="returnModalLabel-{{ checkout.id }}" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="returnModalLabel-{{ checkout.id }}">Confirm Tool Return</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Confirm return of **{{ checkout.tool.name }} ({{ checkout.tool.serial_number }})**?
+        This will update the tool status to 'Available'.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <a href="/checkouts/return/{{ checkout.id }}" class="btn btn-success">Confirm Return</a>
+      </div>
+    </div>
+  </div>
 </div>
+{% endfor %}
+
 {% endblock %}

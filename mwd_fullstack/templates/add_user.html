@@ -1,23 +1,56 @@
 {% extends "base.html" %}
+
 {% block content %}
+<h1 class="text-center mb-5">Register New System User</h1>
 
-<h2>Add New User</h2>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg">
+            
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i> User Registration Details</h3>
+            </div>
 
-<form method="POST" action="/users/add">
-    <div class="mb-3">
-        <label class="form-label">Username</label>
-        <input type="text" class="form-control" name="username" required>
+            <div class="card-body">
+                <form method="POST" action="/users/add">
+                    
+                    <div class="mb-3">
+                        <label for="first_name" class="form-label">First Name</label>
+                        <input type="text" name="first_name" id="first_name" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="last_name" class="form-label">Last Name</label>
+                        <input type="text" name="last_name" id="last_name" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" name="email" id="email" class="form-control" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="role" class="form-label">System Role</label>
+                        <select name="role" id="role" class="form-select" required>
+                            <option value="Technician" selected>Technician</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-person-check-fill me-2"></i> Register User
+                        </button>
+                        <a href="/users" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle me-2"></i> Cancel and Return
+                        </a>
+                    </div>
+                </form>
+            </div>
+            
+        </div>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Full Name</label>
-        <input type="text" class="form-control" name="full_name" required>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Role</label>
-        <input type="text" class="form-control" name="role" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Add User</button>
-    <a href="/users" class="btn btn-secondary">Cancel</a>
-</form>
+</div>
 
 {% endblock %}

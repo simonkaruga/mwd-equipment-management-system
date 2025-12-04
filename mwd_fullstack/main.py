@@ -20,8 +20,9 @@ templates = Jinja2Templates(directory="templates")
 
 # ---------------- Home ----------------
 @app.get("/", response_class=HTMLResponse)
-def home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+def home(request: Request, db: Session = Depends(get_db)):
+    types = crud.get_tool_types(db)
+    return templates.TemplateResponse("index.html", {"request": request, "major_tool_types": types})
 
 
 # ---------------- Users ----------------
@@ -52,6 +53,28 @@ def add_tool_type(name: str = Form(...), description: str = Form(""), db: Sessio
     crud.create_tool_type(db, name, description)
     return RedirectResponse("/tool-types", status_code=303)
 
+@app.get("/tool-types/edit/{tool_type_id}", response_class=HTMLResponse)
+def edit_tool_type(tool_type_id: int, request: Request, db: Session = Depends(get_db)):
+    tt = db.query(models.ToolType).filter(models.ToolType.id == tool_type_id).first()
+    if not tt:
+        return RedirectResponse("/tool-types", status_code=303)
+    return templates.TemplateResponse("edit_tool_type.html", {"request": request, "tool_type": tt})
+
+@app.post("/tool-types/edit/{tool_type_id}")
+def update_tool_type(
+    tool_type_id: int,
+    name: str = Form(...),
+    description: str = Form(""),
+    db: Session = Depends(get_db)
+):
+    tt = crud.update_tool_type(db, tool_type_id, name, description)
+    return RedirectResponse("/tool-types", status_code=303)
+
+@app.post("/tool-types/delete/{tool_type_id}")
+def delete_tool_type(tool_type_id: int, db: Session = Depends(get_db)):
+    crud.delete_tool_type(db, tool_type_id)
+    return RedirectResponse("/tool-types", status_code=303)
+
 
 # ---------------- Tools ----------------
 @app.get("/tools", response_class=HTMLResponse)
@@ -77,9 +100,25 @@ def checkouts(request: Request, db: Session = Depends(get_db)):
     active = crud.get_active_checkouts(db)
     return templates.TemplateResponse("checkouts.html", {"request": request, "checkouts": active})
 
+@app.get("/checkouts/new", response_class=HTMLResponse)
+def new_checkout(request: Request, db: Session = Depends(get_db)):
+    users = crud.get_users(db)
+    available_tools = crud.get_available_tools(db)
+    return templates.TemplateResponse("add_checkout.html", {
+        "request": request,
+        "users": users,
+        "available_tools": available_tools
+    })
+
 @app.post("/checkouts/checkout")
-def checkout_tool(user_id: int = Form(...), tool_id: int = Form(...), db: Session = Depends(get_db)):
-    co, err = crud.checkout_tool(db, user_id, tool_id)
+def checkout_tool(
+    user_id: int = Form(...),
+    tool_id: int = Form(...),
+    project_location: str = Form(...),
+    due_date: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    co, err = crud.checkout_tool(db, user_id, tool_id, project_location, due_date)
     return RedirectResponse("/checkouts", status_code=303)
 
 @app.post("/checkouts/return")

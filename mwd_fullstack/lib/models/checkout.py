@@ -9,6 +9,14 @@ class Checkout(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     tool_id = Column(Integer, ForeignKey("tools.id"))
+    
+    # --- NEW FIELDS FOR TRACKING ---
+    # The projected date the tool is expected back
+    due_date = Column(DateTime, nullable=False) 
+    # The project or location (Rig 14, Shop 2) where the tool is sent
+    project_location = Column(String, nullable=False) 
+    # ------------------------------
+    
     checked_out_at = Column(DateTime, default=datetime.utcnow)
     returned_at = Column(DateTime, nullable=True)
     condition_on_return = Column(String, nullable=True)

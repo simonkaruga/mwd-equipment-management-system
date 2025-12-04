@@ -1,10 +1,52 @@
 {% extends "base.html" %}
+
 {% block content %}
+<h1 class="text-center mb-5 display-4 fw-bold">Welcome to MWD Tool Management</h1>
 
-<div class="p-5 mb-4 bg-light rounded-3 shadow-sm text-center">
-    <h1 class="display-5 fw-bold">MWD Tool Management System</h1>
-    <p class="fs-4 mt-3">Manage MWD tools, tool types, users, and checkouts efficiently.</p>
-    <a href="/users" class="btn btn-primary btn-lg mt-3">Get Started</a>
+<div class="card shadow-lg mb-5">
+    <div class="card-header bg-dark text-white">
+        <h2 class="mb-0"><i class="bi bi-diagram-3-fill me-2"></i> MWD Tools Context</h2>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-6 mb-4 mb-lg-0 text-center">
+                <img src="/static/images/Diagram_of_a_drilling_rig_pillars.jpg" alt="Diagram of a drilling rig pillars" class="img-fluid rounded shadow-sm">
+                <p class="text-muted mt-3 small">Diagram illustrating key components of a drilling rig where MWD tools are deployed.</p>
+            </div>
+            
+            <div class="col-lg-6">
+                <h4>Major Downhole Tool Categories:</h4>
+                <ul class="list-group list-group-flush">
+                    {% for tool_type in major_tool_types %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <i class="bi bi-tag-fill text-primary me-2"></i>
+                        {{ tool_type.name }}
+                        <a href="/tool-types" class="btn btn-sm btn-outline-secondary">Details</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="alert alert-info mt-3 small">
+                    **Note:** All individual tools are cataloged under these types in the <a href="/tool-types" class="alert-link">Tool Types section</a>.
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+    
+    <div class="col">
+        <div class="card shadow-lg h-100 border-primary">
+            <div class="card-body text-center">
+                <i class="bi bi-box-arrow-in-down-right display-4 text-primary mb-3"></i>
+                <h5 class="card-title fw-bold">Tool Checkouts</h5>
+                <p class="card-text text-muted">View current checkouts and tool status.</p>
+                <a href="/checkouts" class="btn btn-primary mt-2 stretched-link">View Checkouts</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col">...</div>
+    <div class="col">...</div>
+    <div class="col">...</div>
+</div>
 {% endblock %}
