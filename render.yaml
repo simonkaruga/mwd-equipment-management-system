@@ -2,7 +2,7 @@ services:
 - type: web
   name: mwd-equipment-management-system
   env: python
-  buildCommand: pip install -r mwd_fullstack/requirements.txt
+  buildCommand: pip install -r requirements.txt
   startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
   buildContext: mwd_fullstack
 databases:
