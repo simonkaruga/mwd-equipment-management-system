@@ -2,6 +2,7 @@ services:
 - type: web
   name: mwd-equipment-manager
   runtime: python
+  buildContext: mwd_fullstack
   region: oregon
   plan: starter
   buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
