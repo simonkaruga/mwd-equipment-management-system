@@ -1,57 +1,60 @@
-/* ---------------- 1. Global & Body Layout ---------------- */
-/* Using a modern, highly readable font (Inter is a great choice) */
-/* NOTE: You must link 'Inter' from Google Fonts in your HTML <head> */
+
+
+
 body {
     font-family: 'Inter', sans-serif; 
-    /* Slightly off-white background for depth */
+   
     background-color: #f8f9fa; 
     margin: 0;
     padding: 0;
-    line-height: 1.6; /* Improved readability */
-    color: #343a40; /* Dark text for contrast */
+    line-height: 1.6; 
+    color: #343a40; 
 }
 
-/* Wider container and better vertical spacing */
+
 .container {
     max-width: 1200px;
-    margin: 40px auto; /* Increased top/bottom margin */
-    padding: 0 15px; /* Better side padding for responsiveness */
+    margin: 40px auto; 
+    padding: 0 15px; 
 }
 
-/* ---------------- 2. Navigation / Header ---------------- */
+
 .navbar {
-    background-color: #212529; /* Slightly darker than default bg-dark for contrast */
-    padding: 15px 0; /* More vertical padding */
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2); /* Stronger shadow to lift the navbar */
+    background-color: #212529; 
+    padding: 15px 0; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
 }
 
 .navbar a {
-    color: #dee2e6; /* Lighter white for text */
+    color: #dee2e6;
     text-decoration: none;
     margin-right: 20px;
     font-weight: 500;
-    transition: color 0.3s ease, border-bottom 0.3s ease; /* Smooth transition */
+    transition: color 0.3s ease, border-bottom 0.3s ease;
 }
 
 .navbar a:hover {
-    color: #17a2b8; /* Highlight links with the accent color */
-    border-bottom: 2px solid #17a2b8; /* Engaging underline effect */
+    color: #17a2b8; 
+    border-bottom: 2px solid #17a2b8;
 }
 
-/* ---------------- 3. Hero Section (First Impression) ---------------- */
+
 .hero {
-    background-color: #17a2b8; /* Solid background color instead of missing image */
-    padding: 100px 20px; /* Increased vertical padding */
+    background-image: url('/static/images/hero image .jpg');
+    background-size: cover;
+    background-position: center;
+    background-color: #17a2b8; 
+    padding: 100px 20px; 
     position: relative;
-    overflow: hidden; /* Ensures gradient stays inside */
+    overflow: hidden; 
 }
 
-/* Enhanced Gradient Overlay (Subtle fade for depth) */
+
 .hero::after {
     content: "";
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    /* Dark gradient fading from top to bottom */
+    
     background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4)); 
 }
 
@@ -61,11 +64,11 @@ body {
 }
 
 .hero h1 {
-    font-size: 3.5rem; /* Slightly larger heading */
+    font-size: 3.5rem; 
     margin-bottom: 10px;
-    font-weight: 800; /* Extra bold */
+    font-weight: 800; 
     letter-spacing: 1.5px;
-    text-shadow: 2px 2px 6px rgba(0,0,0,0.5); /* Clearer text shadow */
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.5); 
 }
 
 .hero p {
@@ -73,106 +76,106 @@ body {
     font-weight: 300;
 }
 
-/* ---------------- 4. Table Styling (Data Presentation) ---------------- */
+
 table {
     width: 100%;
-    border-collapse: separate; /* Allows for border-radius */
+    border-collapse: separate; 
     border-spacing: 0;
     margin-bottom: 30px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Deeper, softer shadow */
-    border-radius: 8px; /* Added soft corners */
-    overflow: hidden; /* Essential for corners to look correct */
-    background-color: #fff; /* Ensure table background is white */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+    border-radius: 8px; 
+    overflow: hidden; 
+    background-color: #fff; 
 }
 
 th, td {
-    padding: 15px; /* Increased padding */
-    border: none; /* Removing harsh inner borders */
+    padding: 15px; 
+    border: none; 
     text-align: left;
 }
 
 th {
-    background-color: #17a2b8; /* Using the Accent Color for headers */
+    background-color: #17a2b8; 
     color: #fff;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-/* Subtle separator for readability */
+
 td {
     border-bottom: 1px solid #e9ecef; 
 }
 
-/* Last row cleanup */
+
 tr:last-child td {
     border-bottom: none;
 }
 
-/* Zebra striping is okay, let's make it softer */
+
 tr:nth-child(even) {
     background-color: #f8f9fa; 
 }
 
-/* Engaging Hover Effect */
+
 tr:hover {
-    background-color: #e3f2fd; /* Light blue/cyan hover */
-    box-shadow: inset 5px 0 0 0 #17a2b8; /* Highlight the row with a teal line on the left */
+    background-color: #e3f2fd; 
+    box-shadow: inset 5px 0 0 0 #17a2b8; 
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
 }
 
-/* ---------------- 5. Buttons (Interactivity & Feedback) ---------------- */
+
 .btn {
-    display: inline-flex; /* Use flex for potential icon alignment */
+    display: inline-flex; 
     align-items: center;
-    padding: 8px 16px; /* Slightly larger padding */
+    padding: 8px 16px; 
     text-decoration: none;
-    border-radius: 6px; /* Slightly softer corners */
+    border-radius: 6px; 
     color: #fff;
     font-size: 0.95rem;
     font-weight: 600;
     border: none;
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Default lifted shadow */
-    transition: all 0.2s ease; /* Transition everything smoothly */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease; 
 }
 
-/* Hover and Active states for tactile feedback */
+
 .btn:hover {
-    transform: translateY(-2px); /* Lift button on hover */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Stronger shadow on hover */
+    transform: translateY(-2px); 
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
 }
 .btn:active {
-    transform: translateY(1px); /* Press down effect */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Reduced shadow when pressed */
+    transform: translateY(1px); 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
 }
 
-/* Color overrides using lighter versions of the accent color */
+
 .btn-success { background-color: #28a745; }
 .btn-success:hover { background-color: #218838; }
 
-.btn-primary { background-color: #17a2b8; /* Accent color for primary actions */ }
+.btn-primary { background-color: #17a2b8; }
 .btn-primary:hover { background-color: #138496; }
 
 .btn-danger { background-color: #dc3545; }
 .btn-danger:hover { background-color: #c82333; }
 
-/* ---------------- 6. Forms (Input Clarity) ---------------- */
+
 form input, form select, form textarea {
     padding: 10px 12px;
     width: 100%;
-    margin-bottom: 15px; /* Increased margin */
-    border: 1px solid #ced4da; /* Softer border color */
+    margin-bottom: 15px; 
+    border: 1px solid #ced4da; 
     border-radius: 6px;
     box-sizing: border-box;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Focus effect for usability */
+
 form input:focus, form select:focus, form textarea:focus {
-    border-color: #17a2b8; /* Highlight focus with accent color */
-    box-shadow: 0 0 0 0.25rem rgba(23, 162, 184, 0.25); /* Subtle glowing effect */
+    border-color: #17a2b8; 
+    box-shadow: 0 0 0 0.25rem rgba(23, 162, 184, 0.25); 
     outline: none;
 }
 
@@ -180,10 +183,10 @@ form label {
     font-weight: 600;
     margin-bottom: 5px;
     display: block;
-    color: #495057; /* Slightly darker label text */
+    color: #495057; 
 }
 
-/* ---------------- 7. Status Colors ---------------- */
-/* Increased contrast and added visual weight */
+
+
 .status-available { color: #1e7e34; font-weight: 700; background-color: #e6ffed; padding: 2px 6px; border-radius: 3px; display: inline-block; }
 .status-checked_out { color: #bd2130; font-weight: 700; background-color: #ffebe6; padding: 2px 6px; border-radius: 3px; display: inline-block; }
