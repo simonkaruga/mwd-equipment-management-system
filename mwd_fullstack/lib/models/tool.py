@@ -14,8 +14,6 @@ class Tool(Base):
     status = Column(String, default="available")
     last_calibrated = Column(DateTime, default=datetime.utcnow)
 
-    # Relationship with ToolType
     tool_type = relationship("ToolType", back_populates="tools")
 
-    # Relationship with Checkouts
     checkouts = relationship("Checkout", back_populates="tool")

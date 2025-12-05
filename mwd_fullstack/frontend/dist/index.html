@@ -1,0 +1,386 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MWD Equipment Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/frontend.b2625c6b.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">MWD Equipment</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="#" onclick="loadHome()">Home</a>
+                <a class="nav-link" href="#" onclick="loadUsers()">Users</a>
+                <a class="nav-link" href="#" onclick="loadToolTypes()">Tool Types</a>
+                <a class="nav-link" href="#" onclick="loadTools()">Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4" id="content">
+        <h1 class="text-center mb-4">Welcome to MWD Equipment Management</h1>
+        <p class="text-center">Select an option from the navigation to get started.</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>const API_BASE = 'http://localhost:8000';
+function loadHome() {
+    const content = document.getElementById('content');
+    content.innerHTML = `<h1 class="text-center mb-5">MWD Equipment Management Dashboard</h1>
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0"><i class="bi bi-card-list me-2"></i> Major Tool Categories</h3>
+            </div>
+            <div class="card-body">
+                <div class="row" id="major-tool-types"></div>
+            </div>
+        </div>
+    </div>
+</div>`;
+    axios.get(`${API_BASE}/tool-types`).then((response)=>{
+        const toolTypes = response.data.tool_types;
+        const html = toolTypes.map((tt)=>`
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">${tt.name}</h5>
+                                    <p class="card-text">${tt.description.slice(0, 100)}...</p>
+                                    <a href="#" onclick="loadToolTypes()" class="btn btn-primary btn-sm">View Details</a>
+                                </div>
+                            </div>
+                        </div>`).join('');
+        document.getElementById('major-tool-types').innerHTML = html;
+    }).catch((error)=>console.error(error));
+}
+function loadUsers() {
+    const content = document.getElementById('content');
+    content.innerHTML = `<h1 class="text-center mb-5">User Management</h1><div class="row">
+    <div class="col-md-7 mb-4">
+        <div class="card shadow-lg h-100">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0"><i class="bi bi-people-fill me-2"></i> All System Users</h3>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Full Name</th>
+                                <th>Role</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-list"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5 mb-4">
+        <div class="card shadow-lg h-100" id="user-form-card"></div>
+    </div>
+</div>`;
+    axios.get(`${API_BASE}/users`).then((response)=>{
+        let users = response.data.users;
+        if (users.length === 0) users = []; // ensure array
+        const html = users.map((u)=>`
+                        <tr>
+                            <td>${u.id}</td>
+                            <td>${u.username}</td>
+                            <td>${u.email || 'N/A'}</td>
+                            <td>${u.full_name || 'N/A'}</td>
+                            <td><span class="badge bg-primary">${u.role}</span></td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-danger btn-sm" onclick="deleteUser(${u.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>`).join('');
+        document.getElementById('users-list').innerHTML = html;
+        showAddUserForm();
+    }).catch((error)=>console.error(error));
+}
+function showAddUserForm() {
+    const form = `
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i> Add New User</h3>
+                </div>
+                <div class="card-body">
+                    <form onsubmit="event.preventDefault(); addUser();">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" name="username" id="username" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" name="email" id="email" class="form-control" placeholder="user@gmail.com">
+                        </div>
+                        <div class="mb-3">
+                            <label for="full_name" class="form-label">Full Name</label>
+                            <input type="text" name="full_name" id="full_name" class="form-control">
+                        </div>
+                        <div class="mb-4">
+                            <label for="role" class="form-label">Role</label>
+                            <select name="role" id="role" class="form-select" required>
+                                <option value="technician" selected>Technician</option>
+                                <option value="engineer">Engineer</option>
+                                <option value="manager">Manager</option>
+                                <option value="administrator">Administrator</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-person-plus-fill me-2"></i> Add User
+                        </button>
+                    </form>
+                </div>
+            `;
+    document.getElementById('user-form-card').innerHTML = form;
+}
+function addUser() {
+    const user = {
+        username: document.getElementById('username').value,
+        full_name: document.getElementById('full_name').value,
+        email: document.getElementById('email').value,
+        role: document.getElementById('role').value
+    };
+    axios.post(`${API_BASE}/users`, user).then(()=>loadUsers()).catch((error)=>console.error(error));
+}
+function deleteUser(id) {
+    axios.delete(`${API_BASE}/users/${id}`).then(()=>loadUsers()).catch((error)=>console.error(error));
+}
+function loadToolTypes() {
+    const content = document.getElementById('content');
+    content.innerHTML = `<h1 class="text-center mb-5">Tool Type Management</h1><div class="row">
+    <div class="col-md-7 mb-4">
+        <div class="card shadow-lg h-100">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0"><i class="bi bi-tags-fill me-2"></i> All Tool Types</h3>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tool-types-list"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5 mb-4">
+        <div class="card shadow-lg h-100" id="tool-type-form-card"></div>
+    </div>
+</div>`;
+    axios.get(`${API_BASE}/tool-types`).then((response)=>{
+        const toolTypes = response.data.tool_types;
+        const html = toolTypes.map((tt)=>`
+                        <tr>
+                            <td>${tt.id}</td>
+                            <td>${tt.name}</td>
+                            <td>${tt.description}</td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" 
+                                        data-bs-target="#deleteTypeModal-{{ tt.id }}" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>`).join('');
+        document.getElementById('tool-types-list').innerHTML = html;
+        showAddToolTypeForm();
+    }).catch((error)=>console.error(error));
+}
+function showAddToolTypeForm() {
+    const form = `
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0"><i class="bi bi-plus-square me-2"></i> Add New Tool Type</h3>
+                </div>
+                <div class="card-body">
+                    <form onsubmit="event.preventDefault(); addToolType();">
+                        <div class="mb-3">
+                            <label for="typename" class="form-label">Type Name</label>
+                            <input type="text" id="typename" class="form-control" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea id="description" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-bookmark-plus me-2"></i> Create Tool Type
+                        </button>
+                    </form>
+                </div>
+            `;
+    document.getElementById('tool-type-form-card').innerHTML = form;
+}
+function addToolType() {
+    const toolType = {
+        name: document.getElementById('typename').value,
+        description: document.getElementById('description').value
+    };
+    axios.post(`${API_BASE}/tool-types`, toolType).then(()=>loadToolTypes()).catch((error)=>console.error(error));
+}
+function deleteToolType(id) {
+    axios.delete(`${API_BASE}/tool-types/${id}`).then(()=>loadToolTypes()).catch((error)=>console.error(error));
+}
+function loadTools() {
+    const content = document.getElementById('content');
+    content.innerHTML = `<h1 class="text-center mb-5">Tool Inventory Management</h1>
+<\!-- Search and Add Tool Controls -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form class="d-flex gap-2" onsubmit="event.preventDefault(); searchTools();">
+                    <input type="text" id="search" class="form-control flex-grow-1"
+                           placeholder="Search by tool name or serial number..."
+                           value="">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 d-flex align-items-center">
+        <div class="alert alert-info mb-0 w-100" id="tools-stats"></div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-7 mb-4">
+        <div class="card shadow-lg h-100">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0"><i class="bi bi-tools me-2"></i> All Tools</h3>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Serial No.</th>
+                                <th>Type</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tools-list"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5 mb-4">
+        <div class="card shadow-lg h-100" id="tool-form-card"></div>
+    </div>
+</div>`;
+    updateToolsList();
+    showAddToolForm();
+}
+function updateToolsList(search = '') {
+    axios.get(`${API_BASE}/tools${search ? '?search=' + encodeURIComponent(search) : ''}`).then((response)=>{
+        const tools = response.data.tools;
+        const totalTools = tools.length;
+        const availableTools = tools.filter((t)=>t.status.toLowerCase() === 'available').length;
+        const html = tools.map((t)=>`
+                        <tr>
+                            <td>${t.id}</td>
+                            <td>${t.name}</td>
+                            <td>${t.serial_number}</td>
+                            <td>${t.type}</td>
+                            <td>${t.location || 'N/A'}</td>
+                            <td>
+                                ${t.status === 'Available' ? `<span class="badge bg-success status-available">${t.status}</span>` : `<span class="badge bg-danger status-checked_out">${t.status}</span>`}
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-danger btn-sm" onclick="deleteTool(${t.id})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>`).join('');
+        document.getElementById('tools-list').innerHTML = html;
+        document.getElementById('tools-stats').innerHTML = `
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Total Tools:</strong> ${totalTools} | <strong>Available:</strong> ${availableTools}`;
+    }).catch((error)=>console.error(error));
+}
+function searchTools() {
+    const search = document.getElementById('search').value;
+    updateToolsList(search);
+}
+function showAddToolForm() {
+    axios.get(`${API_BASE}/tool-types`).then((response)=>{
+        const toolTypes = response.data.tool_types;
+        const options = toolTypes.map((tt)=>`<option value="${tt.id}">${tt.name}</option>`).join('');
+        const form = `
+                        <div class="card-header bg-success text-white">
+                            <h3 class="mb-0"><i class="bi bi-plus-circle me-2"></i> Add New Tool</h3>
+                        </div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); addTool();">
+                                <div class="mb-3">
+                                    <label for="toolname" class="form-label">Tool Name</label>
+                                    <input type="text" id="toolname" class="form-control" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="serial_number" class="form-label">Serial Number</label>
+                                    <input type="text" id="serial_number" class="form-control" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="type_id" class="form-label">Tool Type</label>
+                                    <select id="type_id" class="form-select" required>
+                                        <option value="" disabled selected>Select a Tool Type</option>
+                                        ${options}
+                                    </select>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="location" class="form-label">Current Location (Optional)</label>
+                                    <input type="text" id="location" class="form-control">
+                                </div>
+
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i> Register Tool
+                                </button>
+                            </form>
+                        </div>
+                    `;
+        document.getElementById('tool-form-card').innerHTML = form;
+    }).catch((error)=>console.error(error));
+}
+function addTool() {
+    const tool = {
+        name: document.getElementById('toolname').value,
+        serial_number: document.getElementById('serial_number').value,
+        type_id: parseInt(document.getElementById('type_id').value),
+        location: document.getElementById('location').value
+    };
+    axios.post(`${API_BASE}/tools`, tool).then(()=>loadTools()).catch((error)=>console.error(error));
+}
+function deleteTool(id) {
+    axios.delete(`${API_BASE}/tools/${id}`).then(()=>loadTools()).catch((error)=>console.error(error));
+}
+
+</script>
+
+
+<script src="/frontend.3464ddca.js"></script></body></html>

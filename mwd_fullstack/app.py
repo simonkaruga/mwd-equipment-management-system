@@ -1,10 +1,12 @@
-from fastapi import FastAPI, Request, Form, Depends
+from fastapi import FastAPI, Request, Form, Depends, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from lib.db import get_db, Base, engine
 from lib import crud, models
+
+from lib.db import SessionLocal
 
 Base.metadata.create_all(bind=engine)
 
@@ -87,13 +89,9 @@ seed_database()
 
 app = FastAPI(title="MWD Tool Management")
 
-
-
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-
 templates = Jinja2Templates(directory="templates")
-
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -101,12 +99,10 @@ def home(request: Request, db: Session = Depends(get_db)):
     types = crud.get_tool_types(db)
     return templates.TemplateResponse("index.html", {"request": request, "major_tool_types": types})
 
-
-
 @app.get("/users", response_class=HTMLResponse)
 def users(request: Request, db: Session = Depends(get_db)):
-    users = crud.get_users(db)
-    return templates.TemplateResponse("users.html", {"request": request, "users": users})
+    users_db = crud.get_users(db)
+    return templates.TemplateResponse("users.html", {"request": request, "users": users_db})
 
 @app.post("/users/add")
 def add_user(
@@ -143,12 +139,10 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     crud.delete_user(db, user_id)
     return RedirectResponse("/users", status_code=303)
 
-
-
 @app.get("/tool-types", response_class=HTMLResponse)
 def tool_types(request: Request, db: Session = Depends(get_db)):
-    tool_types = crud.get_tool_types(db)
-    return templates.TemplateResponse("tool_types.html", {"request": request, "tool_types": tool_types})
+    tool_types_list = crud.get_tool_types(db)
+    return templates.TemplateResponse("tool_types.html", {"request": request, "tool_types": tool_types_list})
 
 @app.post("/tool-types/add")
 def add_tool_type(name: str = Form(...), description: str = Form(""), db: Session = Depends(get_db)):
@@ -177,23 +171,20 @@ def delete_tool_type(tool_type_id: int, db: Session = Depends(get_db)):
     crud.delete_tool_type(db, tool_type_id)
     return RedirectResponse("/tool-types", status_code=303)
 
-
-
 @app.get("/tools", response_class=HTMLResponse)
 def tools(request: Request, search: str = "", db: Session = Depends(get_db)):
     all_tools = crud.get_tools(db)
 
-    
     if search:
-        tools = [tool for tool in all_tools
+        tools_db = [tool for tool in all_tools
                 if search.lower() in tool.name.lower() or
                    search.lower() in tool.serial_number.lower()]
     else:
-        tools = all_tools
+        tools_db = all_tools
 
     return templates.TemplateResponse("tools.html", {
         "request": request,
-        "tools": tools,
+        "tools": tools_db,
         "types": crud.get_tool_types(db),
         "search_query": search
     })
@@ -209,8 +200,6 @@ def add_tool(
     crud.create_tool(db, name, serial_number, type_id, location)
     return RedirectResponse("/tools", status_code=303)
 
-
-
 @app.get("/checkouts", response_class=HTMLResponse)
 def checkouts(request: Request, db: Session = Depends(get_db)):
     active = crud.get_active_checkouts(db)
@@ -218,11 +207,11 @@ def checkouts(request: Request, db: Session = Depends(get_db)):
 
 @app.get("/checkouts/new", response_class=HTMLResponse)
 def new_checkout(request: Request, db: Session = Depends(get_db)):
-    users = crud.get_users(db)
+    users_db = crud.get_users(db)
     available_tools = crud.get_available_tools(db)
     return templates.TemplateResponse("add_checkout.html", {
         "request": request,
-        "users": users,
+        "users": users_db,
         "available_tools": available_tools
     })
 

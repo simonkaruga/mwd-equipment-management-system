@@ -9,5 +9,4 @@ class ToolType(Base):
     name = Column(String, nullable=False, unique=True)
     description = Column(String, nullable=True)
 
-    # Relationship with Tools
     tools = relationship("Tool", back_populates="tool_type")
