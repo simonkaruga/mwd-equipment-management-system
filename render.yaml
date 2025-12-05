@@ -1,15 +1,10 @@
 services:
 - type: web
-  name: mwd-equipment-manager
-  runtime: python
+  name: mwd-equipment-management-system
+  env: python
+  buildCommand: pip install -r mwd_fullstack/requirements.txt
+  startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
   buildContext: mwd_fullstack
-  region: oregon
-  plan: starter
-  buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
-  startCommand: "python -m uvicorn app:app --host 0.0.0.0 --port $PORT"
-  envVars:
-  - key: PYTHON_VERSION
-    value: 3.12
 databases:
 - name: mwd-db
   databaseName: mwd_equipment
