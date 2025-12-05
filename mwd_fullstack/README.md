@@ -2,6 +2,8 @@
 
 A comprehensive web application for managing Measurement While Drilling (MWD) equipment and tools in oil and gas operations. Built with FastAPI (backend), Jinja2 templates (frontend), and SQLAlchemy for database management.
 
+🚀 **Live Demo**: [MWD Equipment Management System](https://mwd-equipment-management-system-1.onrender.com/)
+
 ## Features
 
 - **User Management**: Add, edit, delete users with role-based access (technician, engineer, manager, administrator)
